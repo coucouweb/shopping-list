@@ -195,7 +195,7 @@
     
     <script>
         // Initial products data
-        let products = [
+        const initialProducts = [
             { id: 1, name: "Молоко", isActive: true },
             { id: 2, name: "Хлеб", isActive: true },
             { id: 3, name: "Яблоки", isActive: false },
@@ -209,6 +209,17 @@
             { id: 11, name: "Чай", isActive: false },
             { id: 12, name: "Сахар", isActive: true }
         ];
+        
+        // Load products from localStorage or use initial ones
+        let products;
+        try {
+            const savedProducts = localStorage.getItem('shoppingProducts');
+            products = savedProducts ? JSON.parse(savedProducts) : initialProducts;
+        } catch (error) {
+            // Fallback if localStorage is not available
+            products = initialProducts;
+            console.error('LocalStorage not available:', error);
+        }
         
         // DOM elements
         const productsGrid = document.getElementById('productsGrid');
@@ -256,6 +267,13 @@
                 return product;
             });
             
+            // Save to localStorage
+            try {
+                localStorage.setItem('shoppingProducts', JSON.stringify(products));
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+            }
+            
             renderProducts();
         }
         
@@ -287,6 +305,13 @@
                 
                 products.push(newProduct);
                 
+                // Save to localStorage
+                try {
+                    localStorage.setItem('shoppingProducts', JSON.stringify(products));
+                } catch (error) {
+                    console.error('Error saving to localStorage:', error);
+                }
+                
                 renderProducts();
                 addProductModal.style.display = 'none';
                 productNameInput.value = '';
@@ -310,6 +335,53 @@
         
         // Initial render
         renderProducts();
+        
+        // Add a reset button
+        const resetButton = document.createElement('div');
+        resetButton.classList.add('reset-button');
+        resetButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 2v6h6"></path>
+                <path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path>
+            </svg>
+        `;
+        document.body.appendChild(resetButton);
+        
+        // Style for reset button
+        const resetStyle = document.createElement('style');
+        resetStyle.textContent = `
+            .reset-button {
+                position: fixed;
+                bottom: 30px;
+                left: 30px;
+                width: 60px;
+                height: 60px;
+                background-color: #fff;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                cursor: pointer;
+                z-index: 10;
+            }
+            
+            .reset-button svg {
+                width: 24px;
+                height: 24px;
+                color: #888;
+            }
+        `;
+        document.head.appendChild(resetStyle);
+        
+        // Add reset functionality
+        resetButton.addEventListener('click', () => {
+            if (confirm('Сбросить список покупок к начальному состоянию?')) {
+                products = [...initialProducts];
+                localStorage.setItem('shoppingProducts', JSON.stringify(products));
+                renderProducts();
+            }
+        });
     </script>
 </body>
 </html>
