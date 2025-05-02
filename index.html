@@ -2,65 +2,37 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Список покупок</title>
 
-  <!-- ===== CSS ===== -->
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto',Arial,sans-serif}
     body{background:#f9f9f5;padding:20px}
     .container{max-width:600px;margin:0 auto}
     h1{text-align:center;margin-bottom:30px;color:#333;font-size:24px}
 
-    /* ─── Блок фиксированных категорий ─── */
-    .preset-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-      gap:10px;
-      margin:0 0 25px;
-    }
-    .preset-button{
-      background:#fff;
-      border-radius:10px;
-      padding:12px 8px;
-      box-shadow:0 2px 8px rgba(0,0,0,.08);
-      font-size:13px;
-      text-align:center;
-      cursor:pointer;
-      transition:.2s;
-      user-select:none;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:6px;
-    }
+    /* верхние категории */
+    .preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin:0 0 25px}
+    .preset-button{background:#fff;border-radius:10px;padding:12px 8px;box-shadow:0 2px 8px rgba(0,0,0,.08);font-size:13px;text-align:center;cursor:pointer;transition:.2s;user-select:none;display:flex;flex-direction:column;align-items:center;gap:6px}
     .preset-button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
-    .preset-button img{
-      width:28px;
-      height:28px;
-      object-fit:contain;
-      pointer-events:none;
-    }
+    .preset-button img{width:28px;height:28px;object-fit:contain;pointer-events:none}
 
-    /* ─── Карточки товаров из Firestore ─── */
+    /* квадраты из Firestore */
     .products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:100px}
     .product-card{background:#fff;border-radius:12px;padding:20px 15px;display:flex;flex-direction:column;align-items:center;box-shadow:0 3px 10px rgba(0,0,0,.1);cursor:pointer;transition:.2s}
     .product-card:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,.15)}
     .product-card.inactive{opacity:.3}
     .product-icon{width:40px;height:40px;margin-bottom:10px}
+    .product-icon img{width:40px;height:40px;object-fit:contain;pointer-events:none}
     .product-name{font-size:14px;font-weight:500;text-align:center;text-transform:uppercase}
 
-    /* ─── Кнопки «добавить» и «сброс» ─── */
-    .add-button,.reset-button{
-      position:fixed;bottom:30px;width:60px;height:60px;background:#fff;border-radius:50%;
-      display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);
-      cursor:pointer;z-index:10
-    }
+    /* плавающие кнопки */
+    .add-button,.reset-button{position:fixed;bottom:30px;width:60px;height:60px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);cursor:pointer;z-index:10}
     .add-button{right:30px}
     .reset-button{left:30px}
     .add-button svg,.reset-button svg{width:24px;height:24px;color:#888}
 
-    /* ─── Модалка «добавить продукт» ─── */
+    /* модалка */
     .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:100;justify-content:center;align-items:center}
     .modal-content{background:#fff;width:80%;max-width:400px;border-radius:12px;padding:25px}
     .modal-title{font-size:18px;margin-bottom:20px}
@@ -77,25 +49,18 @@
 <body>
   <div class="container">
     <h1>Список покупок</h1>
-
-    <!-- КНОПКИ-КАТЕГОРИИ -->
     <div class="preset-grid" id="presetGrid"></div>
-
-    <!-- Сетка продуктов -->
     <div class="products-grid" id="productsGrid"></div>
   </div>
 
-  <!-- кнопка «плюс» -->
+  <!-- «плюс» -->
   <div class="add-button" id="addButton">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19"></line>
-      <line x1="5" y1="12" x2="19" y2="12"></line>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
   </div>
 
-  <!-- модалка «добавить продукт» -->
+  <!-- модалка -->
   <div class="modal" id="addProductModal">
     <div class="modal-content">
       <h2 class="modal-title">Добавить продукт</h2>
@@ -110,208 +75,119 @@
     </div>
   </div>
 
-  <!-- ===== JAVASCRIPT (module) ===== -->
   <script type="module">
-    /* ------------------------------------------------------------------
-       1. Firebase SDK
-    ------------------------------------------------------------------ */
+    /* 1. Firebase */
     import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAnalytics }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-    import {
-      getFirestore, collection, doc,
-      onSnapshot, addDoc, updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // TODO: замените на свои реальные ключи
+    /* ваши реальные ключи */
     const firebaseConfig = {
-      apiKey:            "YOUR_API_KEY",
-      authDomain:        "YOUR_PROJECT.firebaseapp.com",
-      projectId:         "YOUR_PROJECT",
-      storageBucket:     "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId:             "APP_ID",
-      measurementId:     "MEASUREMENT_ID"
+      apiKey:            "AIzaSyBGi5CGPet9s4WAUtWx4wXu8x_R5M9JCXw",
+      authDomain:        "products-f74d7.firebaseapp.com",
+      projectId:         "products-f74d7",
+      storageBucket:     "products-f74d7.firebasestorage.app",
+      messagingSenderId: "324079574314",
+      appId:             "1:324079574314:web:99d869d1d93a78bf001253",
+      measurementId:     "G-5XRC792NTD"
     };
 
-    const app       = initializeApp(firebaseConfig);
-    getAnalytics(app);                 // не обязателен, но пусть будет
-    const db        = getFirestore(app);
+    const app  = initializeApp(firebaseConfig);
+    getAnalytics(app);
+    const db   = getFirestore(app);
 
-    /* ------------------------------------------------------------------
-       2. DOM-узлы
-    ------------------------------------------------------------------ */
+    /* 2. DOM */
     const presetGrid      = document.getElementById('presetGrid');
     const productsGrid    = document.getElementById('productsGrid');
-    const addButton       = document.getElementById('addButton');
-    const addProductModal = document.getElementById('addProductModal');
-    const cancelButton    = document.getElementById('cancelButton');
+    const addBtn          = document.getElementById('addButton');
+    const addModal        = document.getElementById('addProductModal');
+    const cancelBtn       = document.getElementById('cancelButton');
     const confirmAddBtn   = document.getElementById('confirmAddButton');
     const productNameInp  = document.getElementById('productName');
 
-    /* ------------------------------------------------------------------
-       3. Фиксированный список категорий
-    ------------------------------------------------------------------ */
+    /* 3. Один массив категорий */
     const presetProducts = [
-      { name: 'Молоко' },
-      { name: 'Сметана' },
-      { name: 'Огурцы' },
-      { name: 'Помидоры' },
-      { name: 'Хлеб' },
-      { name: 'Печенье' },
-      { name: 'Корица' },
-      { name: 'Чеснок' },
-      { name: 'Укроп' },
-      { name: 'Петрушка' },
-      { name: 'Масло сливочное' },
-      { name: 'Масло растительное' },
-
-      { name: 'Лимон',
-        icon: 'https://drive.google.com/uc?export=view&id=1nKWzpsQQFE3XVOgXsgGzbZ6lMA51aQY6' },
-
-      { name: 'Майонез' },
-      { name: 'Кетчуп' },
-      { name: 'Яйца' },
-      { name: 'Сыр' },
-      { name: 'Соль' },
-      { name: 'Сахар' },
-      { name: 'Какао-порошок' },
-
-      { name: 'Бананы',
-        icon: 'https://drive.google.com/uc?export=view&id=1Ik3D2aODIXH4o_vExXf7eIWvbFibulbU' },
-
-      { name: 'Овсянка' },
-      { name: 'Мука' }
+      { name:'Молоко' },{ name:'Сметана' },{ name:'Огурцы' },{ name:'Помидоры' },{ name:'Хлеб' },
+      { name:'Печенье' },{ name:'Корица' },{ name:'Чеснок' },{ name:'Укроп' },{ name:'Петрушка' },
+      { name:'Масло сливочное' },{ name:'Масло растительное' },
+      { name:'Лимон',  icon:'https://drive.googleusercontent.com/uc?id=1nKWzpsQQFE3XVOgXsgGzbZ6lMA51aQY6' },
+      { name:'Майонез' },{ name:'Кетчуп' },{ name:'Яйца' },{ name:'Сыр' },{ name:'Соль' },
+      { name:'Сахар' },{ name:'Какао-порошок' },
+      { name:'Бананы',icon:'https://drive.googleusercontent.com/uc?id=1Ik3D2aODIXH4o_vExXf7eIWvbFibulbU' },
+      { name:'Овсянка' },{ name:'Мука' }
     ];
 
-    /* ------------------------------------------------------------------
-       4. Firestore: подписка на коллекцию
-    ------------------------------------------------------------------ */
-    let products = [];   // локальный массив только для отрисовки
-
-    onSnapshot(collection(db,'products'), snapshot => {
-      products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderProducts();
-      renderPresetButtons();
+    /* 4. Firestore подписка */
+    let products = [];
+    onSnapshot(collection(db,'products'), snap=>{
+      products = snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderProducts(); renderPresetButtons();
     });
 
-    async function toggleProductStatus(id){
-      const pr = products.find(p => p.id === id);
-      if(!pr) return;
-      await updateDoc(doc(db,'products',id),{isActive:!pr.isActive});
+    async function toggleProduct(id){
+      const p=products.find(x=>x.id===id);
+      if(p) await updateDoc(doc(db,'products',id),{isActive:!p.isActive});
     }
-    async function addProduct(name){
-      await addDoc(collection(db,'products'),{name,isActive:true});
-    }
+    async function addProduct(obj){ await addDoc(collection(db,'products'),obj); }
 
-    /* ------------------------------------------------------------------
-       5. Рендер карточек из БД
-    ------------------------------------------------------------------ */
+    /* 5. Рендер карточек */
     function renderProducts(){
-      productsGrid.innerHTML = '';
-      products.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card' + (p.isActive ? '' : ' inactive');
-        card.dataset.id = p.id;
+      productsGrid.innerHTML='';
+      products.forEach(p=>{
+        const card=document.createElement('div');
+        card.className='product-card'+(p.isActive?'':' inactive');
+        card.dataset.id=p.id;
 
-        card.innerHTML = `
-          <div class="product-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 6h18"></path>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </div>
-          <p class="product-name">${p.name}</p>
-        `;
+        const iconHTML = p.icon
+          ? `<img src="${p.icon}" alt="">`
+          : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
-        card.addEventListener('click',()=>toggleProductStatus(p.id));
+        card.innerHTML=`<div class="product-icon">${iconHTML}</div><p class="product-name">${p.name}</p>`;
+        card.addEventListener('click',()=>toggleProduct(p.id));
         productsGrid.appendChild(card);
       });
     }
 
-    /* ------------------------------------------------------------------
-       6. Рендер кнопок-категорий
-    ------------------------------------------------------------------ */
+    /* 6. Рендер верхних кнопок */
     function renderPresetButtons(){
-      presetGrid.innerHTML = '';
+      presetGrid.innerHTML='';
+      presetProducts.forEach(d=>{
+        const btn=document.createElement('div'); btn.className='preset-button';
+        btn.innerHTML = d.icon ? `<img src="${d.icon}" alt=""><span>${d.name}</span>` : d.name;
 
-      presetProducts.forEach(data => {
-        const btn = document.createElement('div');
-        btn.className = 'preset-button';
-
-        if(data.icon){
-          btn.innerHTML = `<img src="${data.icon}" alt="">
-                           <span>${data.name}</span>`;
-        }else{
-          btn.textContent = data.name;
-        }
-
-        btn.addEventListener('click', async ()=>{
-          const exist = products.find(
-            p => p.name.toLowerCase() === data.name.toLowerCase()
-          );
-
+        btn.addEventListener('click',async()=>{
+          const exist=products.find(p=>p.name.toLowerCase()===d.name.toLowerCase());
           if(exist){
-            if(!exist.isActive){
-              await updateDoc(doc(db,'products',exist.id),{isActive:true});
-            }
+            if(!exist.isActive) await updateDoc(doc(db,'products',exist.id),{isActive:true});
           }else{
-            await addProduct(data.name);
+            await addProduct({name:d.name,isActive:true,icon:d.icon??null});
           }
         });
-
         presetGrid.appendChild(btn);
       });
     }
 
-    /* ------------------------------------------------------------------
-       7. Модальное окно «Добавить»
-    ------------------------------------------------------------------ */
-    addButton.addEventListener('click',()=>{
-      addProductModal.style.display='flex';
-      productNameInp.focus();
-    });
-    cancelButton.addEventListener('click',closeModal);
-    addProductModal.addEventListener('click',e=>{
-      if(e.target===addProductModal) closeModal();
-    });
-    productNameInp.addEventListener('keyup',e=>{
-      if(e.key==='Enter') confirmAddBtn.click();
-    });
+    /* 7. Модалка */
+    addBtn.addEventListener('click',()=>{addModal.style.display='flex';productNameInp.focus();});
+    cancelBtn.addEventListener('click',closeModal);
+    addModal.addEventListener('click',e=>{if(e.target===addModal) closeModal();});
+    productNameInp.addEventListener('keyup',e=>{if(e.key==='Enter') confirmAddBtn.click();});
     confirmAddBtn.addEventListener('click',async()=>{
-      const name = productNameInp.value.trim();
-      if(!name) return;
-      await addProduct(name);
-      closeModal();
+      const name=productNameInp.value.trim(); if(!name) return;
+      await addProduct({name,isActive:true}); closeModal();
     });
-    function closeModal(){
-      addProductModal.style.display='none';
-      productNameInp.value='';
-    }
+    function closeModal(){addModal.style.display='none';productNameInp.value='';}
 
-    /* ------------------------------------------------------------------
-       8. Кнопка «сброс» (удалить все из коллекции)
-    ------------------------------------------------------------------ */
-    const resetBtn = document.createElement('div');
+    /* 8. Кнопка «сброс» (опционально) */
+    const resetBtn=document.createElement('div');
     resetBtn.className='reset-button';
-    resetBtn.innerHTML=`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 2v6h6"></path>
-        <path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path>
-      </svg>`;
+    resetBtn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"></path><path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path></svg>';
     document.body.appendChild(resetBtn);
 
     resetBtn.addEventListener('click',async()=>{
       if(!confirm('Очистить коллекцию «products»?')) return;
-      // получаем все документы и удаляем
-      const colSnap = await onSnapshot(collection(db,'products'),()=>{});
-      colSnap.forEach(async d=>{
-        await updateDoc(doc(db,'products',d.id),{}); // в демо вместо delete
-      });
+      const snap=await onSnapshot(collection(db,'products'),()=>{});
+      snap.forEach(async d=>await updateDoc(doc(db,'products',d.id),{}));
       alert('Коллекция очищена (обновите страницу)');
     });
   </script>
