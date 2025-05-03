@@ -4,29 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Список покупок</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',Arial,sans-serif}
         body{background:#F3FCE2;padding:20px}
         .container{max-width:600px;margin:0 auto}
-        h1{text-align:center;margin-bottom:30px;color:#333;font-size:24px}
+        h1{text-align:center;margin-top:40px;margin-bottom:28px;color:#252525;font-size:32px;font-weight:500;letter-spacing:-0.6px}
         .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:100px}
-        .product-card{background:#FFFFFF;border-radius:10px;padding:20px 15px;display:flex;flex-direction:column;align-items:center;box-shadow:0 3px 10px rgba(0,0,0,.1);cursor:pointer;transition:.2s}
-        .product-card:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,.15)}
+        .product-card{background:#FFFFFF;border-radius:10px;padding:20px 15px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;transition:.2s}
+        .product-card:hover{transform:translateY(-3px);box-shadow:0 3px 10px rgba(0,0,0,0.1)}
         .product-card.inactive{opacity:.3}
-        .product-icon{width:40px;height:40px;margin-bottom:10px}
-        .product-name{font-size:14px;font-weight:500;text-align:center}
+        .product-name{font-size:20px;font-weight:400;letter-spacing:-0.3px;color:#252525}
         .add-button{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);cursor:pointer;z-index:10}
         .add-button svg{width:24px;height:24px;color:#888}
         .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:100;justify-content:center;align-items:center}
         .modal-content{background:#fff;width:80%;max-width:400px;border-radius:12px;padding:25px}
-        .modal-title{font-size:18px;margin-bottom:20px}
+        .modal-title{font-size:18px;margin-bottom:20px;color:#252525}
         .input-group{margin-bottom:20px}
-        .input-group label{display:block;margin-bottom:8px;font-size:14px;color:#555}
-        .input-group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px}
+        .input-group label{display:block;margin-bottom:8px;font-size:14px;color:#252525}
+        .input-group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px;color:#252525}
         .button-group{display:flex;justify-content:flex-end;gap:10px}
         .button{padding:10px 20px;border:none;border-radius:8px;font-size:14px;cursor:pointer}
-        .button-cancel{background:#f0f0f0;color:#333}
+        .button-cancel{background:#f0f0f0;color:#252525}
         .button-add{background:#333;color:#fff}
         .reset-button{position:fixed;bottom:30px;left:30px;width:60px;height:60px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);cursor:pointer;z-index:10}
         .reset-button svg{width:24px;height:24px;color:#888}
@@ -137,35 +136,51 @@
         function renderProducts() {
             productsGrid.innerHTML = '';
 
+            // Словарь для выбора эмодзи на основе названия продукта
+            const emojiMap = {
+                'банан': '🍌',
+                'молок': '🥛',
+                'хлеб': '🍞',
+                'батон': '🍞',
+                'огурец': '🥒',
+                'огурц': '🥒',
+                'картош': '🥔',
+                'карто': '🥔',
+                'лук': '🧅',
+                'чеснок': '🧄',
+                'яйц': '🥚',
+                'яиц': '🥚',
+                'курица': '🍗',
+                'кур': '🍗',
+                'шоколад': '🍫',
+                'конфет': '🍫'
+            };
+
+            // Функция для определения эмодзи по названию продукта
+            function getEmojiForProduct(productName) {
+                const lowerName = productName.toLowerCase();
+                
+                for (const [key, emoji] of Object.entries(emojiMap)) {
+                    if (lowerName.includes(key)) {
+                        return emoji;
+                    }
+                }
+                
+                // Если не нашли подходящий эмодзи, вернем стандартный
+                return '🛒';
+            }
+
             products.forEach(product => {
                 const card = document.createElement('div');
                 card.classList.add('product-card');
                 if (!product.isActive) card.classList.add('inactive');
                 card.dataset.id = product.id;
 
-                // Проверяем, является ли продукт "бананы" или "бананами"
-                const isBanana = product.name.toLowerCase().includes('банан');
+                // Получаем подходящий эмодзи для продукта
+                const emoji = getEmojiForProduct(product.name);
                 
-                let iconHTML = '';
-                if (isBanana) {
-                    // Используем изображение из Dropbox для бананов
-                    iconHTML = `<img src="https://www.dropbox.com/scl/fi/emoj4lw3nyhfc3y9btdri/image-6.png?rlkey=tkbvbkxl6k93imovhg6dxh52g&raw=1" class="product-icon" alt="Бананы">`;
-                } else {
-                    // Используем стандартную иконку для других продуктов
-                    iconHTML = `
-                        <div class="product-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 6h18"></path>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </div>
-                    `;
-                }
-
                 card.innerHTML = `
-                    ${iconHTML}
-                    <p class="product-name">${product.name}</p>
+                    <p class="product-name">${emoji} ${product.name}</p>
                 `;
 
                 card.addEventListener('click', () => toggleProductStatus(product.id));
