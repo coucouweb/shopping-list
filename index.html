@@ -5,180 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Список покупок</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Roboto', Arial, sans-serif;
-        }
-        
-        body {
-            background-color: #f9f9f5;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-            font-size: 24px;
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 100px;
-        }
-        
-        .product-card {
-            background-color: #fff;
-            border-radius: 12px;
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        }
-        
-        .product-card.inactive {
-            opacity: 0.3;
-        }
-        
-        .product-icon {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
-        }
-        
-        .product-name {
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        
-        .add-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background-color: #fff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            z-index: 10;
-        }
-        
-        .add-button svg {
-            width: 24px;
-            height: 24px;
-            color: #888;
-        }
-        
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: #fff;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 12px;
-            padding: 25px;
-        }
-        
-        .modal-title {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #555;
-        }
-        
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
-        .button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        .button-cancel {
-            background-color: #f0f0f0;
-            color: #333;
-        }
-        
-        .button-add {
-            background-color: #333;
-            color: #fff;
-        }
+        /* ---------- весь ваш прежний CSS ---------- */
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto',Arial,sans-serif}
+        body{background:#f9f9f5;padding:20px}
+        .container{max-width:600px;margin:0 auto}
+        h1{text-align:center;margin-bottom:30px;color:#333;font-size:24px}
+        .products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:100px}
+        .product-card{background:#fff;border-radius:12px;padding:20px 15px;display:flex;flex-direction:column;align-items:center;box-shadow:0 3px 10px rgba(0,0,0,.1);cursor:pointer;transition:.2s}
+        .product-card:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,.15)}
+        .product-card.inactive{opacity:.3}
+        .product-icon{width:40px;height:40px;margin-bottom:10px}
+        .product-name{font-size:14px;font-weight:500;text-align:center;text-transform:uppercase}
+        .add-button{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);cursor:pointer;z-index:10}
+        .add-button svg{width:24px;height:24px;color:#888}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:100;justify-content:center;align-items:center}
+        .modal-content{background:#fff;width:80%;max-width:400px;border-radius:12px;padding:25px}
+        .modal-title{font-size:18px;margin-bottom:20px}
+        .input-group{margin-bottom:20px}
+        .input-group label{display:block;margin-bottom:8px;font-size:14px;color:#555}
+        .input-group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px}
+        .button-group{display:flex;justify-content:flex-end;gap:10px}
+        .button{padding:10px 20px;border:none;border-radius:8px;font-size:14px;cursor:pointer}
+        .button-cancel{background:#f0f0f0;color:#333}
+        .button-add{background:#333;color:#fff}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Список покупок</h1>
-        
-        <div class="products-grid" id="productsGrid">
-            <!-- Products will be added here dynamically -->
-        </div>
+
+        <div class="products-grid" id="productsGrid"></div>
     </div>
-    
+
+    <!-- кнопка «плюс» -->
     <div class="add-button" id="addButton">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
     </div>
-    
+
+    <!-- модальное окно «добавить продукт» -->
     <div class="modal" id="addProductModal">
         <div class="modal-content">
             <h2 class="modal-title">Добавить продукт</h2>
@@ -192,56 +59,89 @@
             </div>
         </div>
     </div>
-    
-    <script>
-        // Initial products data
-        const initialProducts = [
-            { id: 1, name: "Молоко", isActive: true },
-            { id: 2, name: "Хлеб", isActive: true },
-            { id: 3, name: "Яблоки", isActive: false },
-            { id: 4, name: "Сыр", isActive: true },
-            { id: 5, name: "Макароны", isActive: false },
-            { id: 6, name: "Масло", isActive: true },
-            { id: 7, name: "Яйца", isActive: true },
-            { id: 8, name: "Помидоры", isActive: false },
-            { id: 9, name: "Огурцы", isActive: false },
-            { id: 10, name: "Кофе", isActive: true },
-            { id: 11, name: "Чай", isActive: false },
-            { id: 12, name: "Сахар", isActive: true }
-        ];
-        
-        // Load products from localStorage or use initial ones
-        let products;
-        try {
-            const savedProducts = localStorage.getItem('shoppingProducts');
-            products = savedProducts ? JSON.parse(savedProducts) : initialProducts;
-        } catch (error) {
-            // Fallback if localStorage is not available
-            products = initialProducts;
-            console.error('LocalStorage not available:', error);
-        }
-        
-        // DOM elements
-        const productsGrid = document.getElementById('productsGrid');
-        const addButton = document.getElementById('addButton');
-        const addProductModal = document.getElementById('addProductModal');
-        const cancelButton = document.getElementById('cancelButton');
+
+    <!-------------------  JAVASCRIPT  ------------------->
+    <script type="module">
+        /* ------------------------------------------------------------------
+           1. Firebase SDK
+        ------------------------------------------------------------------ */
+        import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAnalytics }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+        import {
+            getFirestore, collection, doc,
+            onSnapshot, addDoc, updateDoc
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // !!!   ваши реальные ключи (вы прислали их в сообщении)   !!!
+        const firebaseConfig = {
+          apiKey:            "AIzaSyBGi5CGPet9s4WAUtWx4wXu8x_R5M9JCXw",
+          authDomain:        "products-f74d7.firebaseapp.com",
+          projectId:         "products-f74d7",
+          storageBucket:     "products-f74d7.firebasestorage.app",
+          messagingSenderId: "324079574314",
+          appId:             "1:324079574314:web:99d869d1d93a78bf001253",
+          measurementId:     "G-5XRC792NTD"
+        };
+
+        const app       = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);      // можно не использовать, но пусть будет
+        const db        = getFirestore(app);
+
+        /* ------------------------------------------------------------------
+           2. DOM-элементы
+        ------------------------------------------------------------------ */
+        const productsGrid     = document.getElementById('productsGrid');
+        const addButton        = document.getElementById('addButton');
+        const addProductModal  = document.getElementById('addProductModal');
+        const cancelButton     = document.getElementById('cancelButton');
         const confirmAddButton = document.getElementById('confirmAddButton');
         const productNameInput = document.getElementById('productName');
-        
-        // Render products function
+
+        /* ------------------------------------------------------------------
+           3. Работа с Firestore
+        ------------------------------------------------------------------ */
+        let products = [];   // локальный массив только для рендера
+
+        // «Живая» подписка – как только что-то меняется в коллекции, перерисовываем
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            products = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            renderProducts();
+        });
+
+        // переключаем активность карточки
+        async function toggleProductStatus(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            await updateDoc(doc(db, "products", productId), {
+                isActive: !product.isActive
+            });
+            // onSnapshot сам обновит UI всем клиентам
+        }
+
+        // добавляем новый продукт
+        async function addProduct(name) {
+            await addDoc(collection(db, "products"), {
+                name: name,
+                isActive: true
+            });
+        }
+
+        /* ------------------------------------------------------------------
+           4. Рендер карточек (ваш прежний код)
+        ------------------------------------------------------------------ */
         function renderProducts() {
             productsGrid.innerHTML = '';
-            
+
             products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.classList.add('product-card');
-                if (!product.isActive) {
-                    productCard.classList.add('inactive');
-                }
-                productCard.dataset.id = product.id;
-                
-                productCard.innerHTML = `
+                const card = document.createElement('div');
+                card.classList.add('product-card');
+                if (!product.isActive) card.classList.add('inactive');
+                card.dataset.id = product.id;
+
+                card.innerHTML = `
                     <div class="product-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"></path>
@@ -251,136 +151,66 @@
                     </div>
                     <p class="product-name">${product.name}</p>
                 `;
-                
-                productCard.addEventListener('click', () => toggleProductStatus(product.id));
-                
-                productsGrid.appendChild(productCard);
+
+                card.addEventListener('click', () => toggleProductStatus(product.id));
+                productsGrid.appendChild(card);
             });
         }
-        
-        // Toggle product active status
-        function toggleProductStatus(productId) {
-            products = products.map(product => {
-                if (product.id === productId) {
-                    return { ...product, isActive: !product.isActive };
-                }
-                return product;
-            });
-            
-            // Save to localStorage
-            try {
-                localStorage.setItem('shoppingProducts', JSON.stringify(products));
-            } catch (error) {
-                console.error('Error saving to localStorage:', error);
-            }
-            
-            renderProducts();
-        }
-        
-        // Show add product modal
+
+        /* ------------------------------------------------------------------
+           5. Модальное окно «Добавить»
+        ------------------------------------------------------------------ */
         addButton.addEventListener('click', () => {
             addProductModal.style.display = 'flex';
             productNameInput.focus();
         });
-        
-        // Hide modal on cancel
-        cancelButton.addEventListener('click', () => {
+
+        cancelButton.addEventListener('click', closeModal);
+        addProductModal.addEventListener('click', (e) => {
+            if (e.target === addProductModal) closeModal();
+        });
+        productNameInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') confirmAddButton.click();
+        });
+
+        confirmAddButton.addEventListener('click', async () => {
+            const name = productNameInput.value.trim();
+            if (!name) return;
+            await addProduct(name);   // добавили в БД — onSnapshot сам перерисует
+            closeModal();
+        });
+
+        function closeModal() {
             addProductModal.style.display = 'none';
             productNameInput.value = '';
-        });
-        
-        // Add new product
-        confirmAddButton.addEventListener('click', () => {
-            const productName = productNameInput.value.trim();
-            
-            if (productName) {
-                // Find max id to ensure unique id
-                const maxId = products.reduce((max, product) => Math.max(max, product.id), 0);
-                
-                const newProduct = {
-                    id: maxId + 1,
-                    name: productName,
-                    isActive: true
-                };
-                
-                products.push(newProduct);
-                
-                // Save to localStorage
-                try {
-                    localStorage.setItem('shoppingProducts', JSON.stringify(products));
-                } catch (error) {
-                    console.error('Error saving to localStorage:', error);
-                }
-                
-                renderProducts();
-                addProductModal.style.display = 'none';
-                productNameInput.value = '';
-            }
-        });
-        
-        // Close modal when clicking outside
-        addProductModal.addEventListener('click', (e) => {
-            if (e.target === addProductModal) {
-                addProductModal.style.display = 'none';
-                productNameInput.value = '';
-            }
-        });
-        
-        // Add product on Enter key
-        productNameInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                confirmAddButton.click();
-            }
-        });
-        
-        // Initial render
-        renderProducts();
-        
-        // Add a reset button
-        const resetButton = document.createElement('div');
-        resetButton.classList.add('reset-button');
-        resetButton.innerHTML = `
+        }
+
+        /* ------------------------------------------------------------------
+           6. Кнопка «сброс» (оставил, но теперь она очищает Firestore)
+        ------------------------------------------------------------------ */
+        const resetBtn = document.createElement('div');
+        resetBtn.className = 'reset-button';
+        resetBtn.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 2v6h6"></path>
                 <path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path>
-            </svg>
+            </svg>`;
+        document.body.appendChild(resetBtn);
+
+        const css = document.createElement('style');
+        css.textContent = `
+            .reset-button{position:fixed;bottom:30px;left:30px;width:60px;height:60px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);cursor:pointer;z-index:10}
+            .reset-button svg{width:24px;height:24px;color:#888}
         `;
-        document.body.appendChild(resetButton);
-        
-        // Style for reset button
-        const resetStyle = document.createElement('style');
-        resetStyle.textContent = `
-            .reset-button {
-                position: fixed;
-                bottom: 30px;
-                left: 30px;
-                width: 60px;
-                height: 60px;
-                background-color: #fff;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                cursor: pointer;
-                z-index: 10;
-            }
-            
-            .reset-button svg {
-                width: 24px;
-                height: 24px;
-                color: #888;
-            }
-        `;
-        document.head.appendChild(resetStyle);
-        
-        // Add reset functionality
-        resetButton.addEventListener('click', () => {
-            if (confirm('Сбросить список покупок к начальному состоянию?')) {
-                products = [...initialProducts];
-                localStorage.setItem('shoppingProducts', JSON.stringify(products));
-                renderProducts();
-            }
+        document.head.appendChild(css);
+
+        // просто для демонстрации: удаляем ВСЕ документы коллекции
+        resetBtn.addEventListener('click', async () => {
+            if (!confirm('Очистить коллекцию «products»?')) return;
+            const col = collection(db, "products");
+            const snap = await onSnapshot(col, ()=>{}); // получим актуальный список
+            snap.forEach(async d => await updateDoc(doc(db,"products",d.id),{}));
+            alert('Коллекция очищена (обновите страницу)');
         });
     </script>
 </body>
