@@ -11,7 +11,8 @@
         .container{max-width:600px;margin:0 auto}
         h1{text-align:center;margin-top:40px;margin-bottom:34px;color:#252525;font-size:26px;font-weight:500;letter-spacing:-0.9px}
         .products-grid{display:grid;grid-template-columns:1fr;gap:15px;margin-bottom:100px}
-        .product-card{background:#FFFFFF;border-radius:10px;padding:20px 20px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;transition:transform 0.3s, box-shadow 0.3s, opacity 0.3s}
+        .product-card{background:#FFFFFF;border-radius:10px;padding:20px 20px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;
+            transition:all 1s cubic-bezier(0.25, 1, 0.5, 1)}
         .product-card:hover{transform:translateY(-3px);box-shadow:0 3px 10px rgba(0,0,0,0.1)}
         .product-card.inactive{opacity:.3}
         .product-name{font-size:20px;font-weight:500;letter-spacing:-0.3px;color:#252525;display:flex;align-items:center}
@@ -30,6 +31,13 @@
         .button-add{background:#333;color:#fff}
         .reset-button{position:fixed;bottom:30px;left:30px;width:60px;height:60px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);cursor:pointer;z-index:10}
         .reset-button svg{width:24px;height:24px;color:#888}
+        
+        .products-grid {
+            transition: opacity 0.8s ease;
+        }
+        .products-grid.updating {
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
@@ -103,6 +111,9 @@
            3. Работа с Firestore
         ------------------------------------------------------------------ */
         let products = [];
+        
+        // Переменная для контроля задержки
+        let isUpdating = false;
 
         // Получаем данные из Firestore
         onSnapshot(collection(db, "products"), (snapshot) => {
@@ -110,16 +121,47 @@
                 id: doc.id,
                 ...doc.data()
             }));
-            renderProducts();
+            
+            // Сначала добавляем класс для плавного затухания
+            if (!isUpdating) {
+                productsGrid.classList.add('updating');
+                
+                // Ждем завершения анимации затухания перед обновлением
+                setTimeout(() => {
+                    renderProducts();
+                }, 400);
+            } else {
+                renderProducts();
+            }
         });
 
         // Переключаем активность карточки
         async function toggleProductStatus(productId) {
+            // Устанавливаем флаг обновления
+            isUpdating = true;
+            
             const product = products.find(p => p.id === productId);
             if (!product) return;
-            await updateDoc(doc(db, "products", productId), {
-                isActive: !product.isActive
-            });
+            
+            // Добавляем класс для визуального фидбека
+            const card = document.querySelector(`[data-id="${productId}"]`);
+            if (card) {
+                card.style.transition = "all 0.5s ease";
+                card.style.transform = product.isActive ? "translateY(20px)" : "translateY(-20px)";
+                card.style.opacity = "0.5";
+            }
+            
+            // Задержка перед отправкой изменений в базу данных
+            setTimeout(async () => {
+                await updateDoc(doc(db, "products", productId), {
+                    isActive: !product.isActive
+                });
+                
+                // Сбрасываем флаг обновления через некоторое время
+                setTimeout(() => {
+                    isUpdating = false;
+                }, 800);
+            }, 300);
         }
 
         // Добавляем новый продукт
@@ -205,6 +247,11 @@
                 card.addEventListener('click', () => toggleProductStatus(product.id));
                 productsGrid.appendChild(card);
             });
+            
+            // Удаляем класс для восстановления видимости
+            setTimeout(() => {
+                productsGrid.classList.remove('updating');
+            }, 100);
         }
 
         /* ------------------------------------------------------------------
