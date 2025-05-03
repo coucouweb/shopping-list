@@ -9,12 +9,12 @@
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',Arial,sans-serif}
         body{background:#F3FCE2;padding:20px}
         .container{max-width:600px;margin:0 auto}
-        h1{text-align:center;margin-top:40px;margin-bottom:28px;color:#252525;font-size:32px;font-weight:500;letter-spacing:-0.6px}
-        .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:100px}
-        .product-card{background:#FFFFFF;border-radius:10px;padding:20px 15px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;transition:.2s}
+        h1{text-align:center;margin-top:40px;margin-bottom:34px;color:#252525;font-size:26px;font-weight:500;letter-spacing:-0.9px}
+        .products-grid{display:grid;grid-template-columns:1fr;gap:15px;margin-bottom:100px}
+        .product-card{background:#FFFFFF;border-radius:10px;padding:20px 20px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;transition:.2s}
         .product-card:hover{transform:translateY(-3px);box-shadow:0 3px 10px rgba(0,0,0,0.1)}
         .product-card.inactive{opacity:.3}
-        .product-name{font-size:20px;font-weight:400;letter-spacing:-0.3px;color:#252525}
+        .product-name{font-size:20px;font-weight:500;letter-spacing:-0.3px;color:#252525}
         .add-button{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,.2);cursor:pointer;z-index:10}
         .add-button svg{width:24px;height:24px;color:#888}
         .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:100;justify-content:center;align-items:center}
@@ -131,12 +131,12 @@
         }
 
         /* ------------------------------------------------------------------
-           4. Рендер карточек (обновленный)
+           4. Рендер карточек (обновленный с сортировкой)
         ------------------------------------------------------------------ */
         function renderProducts() {
             productsGrid.innerHTML = '';
 
-            // Словарь для выбора эмодзи на основе названия продукта
+            // Расширенный словарь для выбора эмодзи на основе названия продукта
             const emojiMap = {
                 'банан': '🍌',
                 'молок': '🥛',
@@ -153,7 +153,20 @@
                 'курица': '🍗',
                 'кур': '🍗',
                 'шоколад': '🍫',
-                'конфет': '🍫'
+                'сахар': '🧁',
+                'какао': '🍫',
+                'майонез': '🫙',
+                'сыр': '🧀',
+                'соль': '🧂',
+                'кетчуп': '🥫',
+                'вода': '💧',
+                'корица': '🌺',
+                'мука': '🫙',
+                'помидор': '🍅',
+                'томат': '🍅',
+                'овсянк': '🥣',
+                'масло': '🧈',
+                'лимон': '🍋'
             };
 
             // Функция для определения эмодзи по названию продукта
@@ -170,7 +183,17 @@
                 return '🛒';
             }
 
-            products.forEach(product => {
+            // Сортируем продукты: активные впереди, неактивные позади
+            const sortedProducts = [...products].sort((a, b) => {
+                // Если a активен, а b неактивен, a идет впереди
+                if (a.isActive && !b.isActive) return -1;
+                // Если a неактивен, а b активен, b идет впереди
+                if (!a.isActive && b.isActive) return 1;
+                // Если оба активны или оба неактивны, сохраняем текущий порядок
+                return 0;
+            });
+
+            sortedProducts.forEach(product => {
                 const card = document.createElement('div');
                 card.classList.add('product-card');
                 if (!product.isActive) card.classList.add('inactive');
@@ -180,7 +203,7 @@
                 const emoji = getEmojiForProduct(product.name);
                 
                 card.innerHTML = `
-                    <p class="product-name">${emoji} ${product.name}</p>
+                    <p class="product-name">${emoji}  ${product.name}</p>
                 `;
 
                 card.addEventListener('click', () => toggleProductStatus(product.id));
